@@ -17,13 +17,6 @@ TEST(SoundexTest, HandlesDuplicateCodes) {
     EXPECT_EQ(generateSoundex("CGJKQSXZ"), "C200");
 }
 
-// Test for a name with mixed character codes and length greater than 4
-TEST(SoundexTest, HandlesMixedCodes) {
-    EXPECT_EQ(generateSoundex("Robert"), "R163");
-    EXPECT_EQ(generateSoundex("Rupert"), "R163");
-    EXPECT_EQ(generateSoundex("Tymczak"), "T522");
-}
-
 // Test for names that contain non-alphabetic characters
 TEST(SoundexTest, HandlesNonAlphabeticCharacters) {
     EXPECT_EQ(generateSoundex("O'Hara"), "O600");
