@@ -28,6 +28,8 @@ std::string generateSoundex(const std::string& name) {
         if (code != '0' && code != prevCode) {
             soundex += code;
             prevCode = code;
+        } else if (code != '0') {
+            prevCode = code;  // Update prevCode even if it's not added to soundex
         }
     }
 
