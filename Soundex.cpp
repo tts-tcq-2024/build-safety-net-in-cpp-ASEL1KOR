@@ -1,9 +1,11 @@
-#include "Soundex.h"
-#include <cctype>
+#include <string>
 #include <unordered_map>
+#include <cctype>
 
-char getSoundexCode(char c) {
-    static const std::unordered_map<char, char> soundexMap = {
+std::string generateSoundex(const std::string& name) {
+    if (name.empty()) return "";
+
+    std::unordered_map<char, char> soundexMap = {
         {'B', '1'}, {'F', '1'}, {'P', '1'}, {'V', '1'},
         {'C', '2'}, {'G', '2'}, {'J', '2'}, {'K', '2'}, {'Q', '2'}, {'S', '2'}, {'X', '2'}, {'Z', '2'},
         {'D', '3'}, {'T', '3'},
@@ -11,28 +13,31 @@ char getSoundexCode(char c) {
         {'M', '5'}, {'N', '5'},
         {'R', '6'}
     };
-    
-    c = toupper(c);
-    auto it = soundexMap.find(c);
-    return (it != soundexMap.end()) ? it->second : '0';
-}
 
-std::string generateSoundex(const std::string& name) {
-    if (name.empty()) return "";
+    std::string result;
+    result += std::toupper(name[0]);
 
-    std::string soundex(1, toupper(name[0]));
-    char prevCode = getSoundexCode(name[0]);
+    char previousCode = '0'; // To track previous code for duplicates
+    for (size_t i = 1; i < name.length(); ++i) {
+        char currentChar = std::toupper(name[i]);
 
-    for (size_t i = 1; i < name.length() && soundex.length() < 4; ++i) {
-        char code = getSoundexCode(name[i]);
-        if (code != '0' && code != prevCode) {
-            soundex += code;
-            prevCode = code;
-        } else if (code != '0') {
-            prevCode = code;  // Update prevCode even if it's not added to soundex
+        if (soundexMap.find(currentChar) != soundexMap.end()) {
+            char currentCode = soundexMap[currentChar];
+
+            if (currentCode != previousCode) {
+                result += currentCode;
+            }
+
+            previousCode = currentCode;
         }
     }
 
-    soundex.append(4 - soundex.length(), '0');
-    return soundex;
+    // Ensure the result is exactly four characters long
+    result = result.substr(0, 4);
+    while (result.length() < 4) {
+        result += '0';
+    }
+
+    return result;
 }
+
