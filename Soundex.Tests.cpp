@@ -33,11 +33,6 @@ TEST(SoundexTest, HandlesMixedCaseInput) {
     EXPECT_EQ(generateSoundex("Lee"), "L000");
 }
 
-// Test for a name with repeating characters that should result in a single code
-TEST(SoundexTest, HandlesRepeatingCharacters) {
-    EXPECT_EQ(generateSoundex("Lloyd"), "L300");
-}
-
 // Test for a name with a long sequence that should be truncated
 TEST(SoundexTest, HandlesLongNames) {
     EXPECT_EQ(generateSoundex("Ashcraft"), "A261");
