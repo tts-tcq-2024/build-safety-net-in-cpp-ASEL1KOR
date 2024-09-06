@@ -2,10 +2,9 @@
 #include <unordered_map>
 #include <cctype>
 
-std::string generateSoundex(const std::string& name) {
-    if (name.empty()) return "";
-
-    std::unordered_map<char, char> soundexMap = {
+// Function to create the Soundex mapping
+std::unordered_map<char, char> createSoundexMap() {
+    return {
         {'B', '1'}, {'F', '1'}, {'P', '1'}, {'V', '1'},
         {'C', '2'}, {'G', '2'}, {'J', '2'}, {'K', '2'}, {'Q', '2'}, {'S', '2'}, {'X', '2'}, {'Z', '2'},
         {'D', '3'}, {'T', '3'},
@@ -13,21 +12,30 @@ std::string generateSoundex(const std::string& name) {
         {'M', '5'}, {'N', '5'},
         {'R', '6'}
     };
+}
 
-    std::string result;
-    result += std::toupper(name[0]);
+// Function to get the Soundex code for a character
+char getSoundexCode(char c, const std::unordered_map<char, char>& soundexMap) {
+    char upperChar = std::toupper(c);
+    if (soundexMap.find(upperChar) != soundexMap.end()) {
+        return soundexMap.at(upperChar);
+    }
+    return '0'; // Non-mapped characters like vowels return '0'
+}
 
-    char previousCode = '0'; // To track previous code for duplicates
+// Main Soundex generation function
+std::string generateSoundex(const std::string& name) {
+    if (name.empty()) return "";
+
+    std::unordered_map<char, char> soundexMap = createSoundexMap();
+    std::string result(1, std::toupper(name[0]));
+
+    char previousCode = '0';
     for (size_t i = 1; i < name.length(); ++i) {
-        char currentChar = std::toupper(name[i]);
+        char currentCode = getSoundexCode(name[i], soundexMap);
 
-        if (soundexMap.find(currentChar) != soundexMap.end()) {
-            char currentCode = soundexMap[currentChar];
-
-            if (currentCode != previousCode) {
-                result += currentCode;
-            }
-
+        if (currentCode != '0' && currentCode != previousCode) {
+            result += currentCode;
             previousCode = currentCode;
         }
     }
