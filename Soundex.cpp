@@ -1,36 +1,50 @@
-#include "Soundex.h"
+#include <string>
+#include <unordered_map>
 #include <cctype>
 
-char getSoundexCode(char c) {
-    c = toupper(c);
-    switch (c) {
-        case 'B': case 'F': case 'P': case 'V': return '1';
-        case 'C': case 'G': case 'J': case 'K': case 'Q': case 'S': case 'X': case 'Z': return '2';
-        case 'D': case 'T': return '3';
-        case 'L': return '4';
-        case 'M': case 'N': return '5';
-        case 'R': return '6';
-        default: return '0'; // For A, E, I, O, U, H, W, Y
-    }
+// Function to create the Soundex mapping
+std::unordered_map<char, char> createSoundexMap() {
+    return {
+        {'B', '1'}, {'F', '1'}, {'P', '1'}, {'V', '1'},
+        {'C', '2'}, {'G', '2'}, {'J', '2'}, {'K', '2'}, {'Q', '2'}, {'S', '2'}, {'X', '2'}, {'Z', '2'},
+        {'D', '3'}, {'T', '3'},
+        {'L', '4'},
+        {'M', '5'}, {'N', '5'},
+        {'R', '6'}
+    };
 }
 
+// Function to get the Soundex code for a character
+char getSoundexCode(char c, const std::unordered_map<char, char>& soundexMap) {
+    char upperChar = std::toupper(c);
+    if (soundexMap.find(upperChar) != soundexMap.end()) {
+        return soundexMap.at(upperChar);
+    }
+    return '0'; // Non-mapped characters like vowels return '0'
+}
+
+// Main Soundex generation function
 std::string generateSoundex(const std::string& name) {
     if (name.empty()) return "";
 
-    std::string soundex(1, toupper(name[0]));
-    char prevCode = getSoundexCode(name[0]);
+    std::unordered_map<char, char> soundexMap = createSoundexMap();
+    std::string result(1, std::toupper(name[0]));
 
-    for (size_t i = 1; i < name.length() && soundex.length() < 4; ++i) {
-        char code = getSoundexCode(name[i]);
-        if (code != '0' && code != prevCode) {
-            soundex += code;
-            prevCode = code;
+    char previousCode = '0';
+    for (size_t i = 1; i < name.length(); ++i) {
+        char currentCode = getSoundexCode(name[i], soundexMap);
+
+        if (currentCode != '0' && currentCode != previousCode) {
+            result += currentCode;
+            previousCode = currentCode;
         }
     }
 
-    while (soundex.length() < 4) {
-        soundex += '0';
+    // Ensure the result is exactly four characters long
+    result = result.substr(0, 4);
+    while (result.length() < 4) {
+        result += '0';
     }
 
-    return soundex;
+    return result;
 }
